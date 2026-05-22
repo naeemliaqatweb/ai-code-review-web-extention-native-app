@@ -38,7 +38,7 @@ class User extends Authenticatable
      */
     public function codeSubmissions(): HasMany
     {
-        return $this->hasMany(\App\Models\CodeSubmission::class);
+        return $this->hasMany(CodeSubmission::class);
     }
 
     /**
@@ -46,7 +46,7 @@ class User extends Authenticatable
      */
     public function textSubmissions(): HasMany
     {
-        return $this->hasMany(\App\Models\TextSubmission::class);
+        return $this->hasMany(TextSubmission::class);
     }
 
     /**
@@ -54,7 +54,7 @@ class User extends Authenticatable
      */
     public function resumes(): HasMany
     {
-        return $this->hasMany(\App\Models\Resume::class);
+        return $this->hasMany(Resume::class);
     }
 
     /**
@@ -62,6 +62,6 @@ class User extends Authenticatable
      */
     public function reports(): HasMany
     {
-        return $this->hasMany(\App\Models\Report::class);
+        return $this->hasMany(Report::class);
     }
 }

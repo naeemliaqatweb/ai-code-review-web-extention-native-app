@@ -2,20 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ResumeService;
 use App\Services\AiAnalysisService;
 use App\Services\ResumeModuleService;
+use App\Services\ResumeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ResumeController extends Controller
 {
     protected $resumeService;
+
     protected $aiAnalysisService;
+
     protected $resumeModuleService;
 
     public function __construct(
-        ResumeService $resumeService, 
+        ResumeService $resumeService,
         AiAnalysisService $aiAnalysisService,
         ResumeModuleService $resumeModuleService
     ) {
@@ -48,12 +50,12 @@ class ResumeController extends Controller
             $this->aiAnalysisService->analyzeResumeSubmission($resume);
             $this->aiAnalysisService->rewriteResumeSubmission($resume);
         } catch (\Exception $e) {
-            \Log::error("Resume AI processing failed: " . $e->getMessage());
+            \Log::error('Resume AI processing failed: '.$e->getMessage());
         }
 
         return response()->json([
             'message' => 'Resume submitted and processing started successfully',
-            'data' => $resume->load(['analysis', 'rewrite'])
+            'data' => $resume->load(['analysis', 'rewrite']),
         ], 201);
     }
 
@@ -63,6 +65,7 @@ class ResumeController extends Controller
     public function index()
     {
         $resumes = $this->resumeService->getUserResumes();
+
         return response()->json(['data' => $resumes]);
     }
 
@@ -72,6 +75,7 @@ class ResumeController extends Controller
     public function show($id)
     {
         $resume = $this->resumeService->getResumeById($id);
+
         return response()->json(['data' => $resume->load(['analysis', 'rewrite'])]);
     }
 
@@ -98,11 +102,13 @@ class ResumeController extends Controller
 
         try {
             $pdf = $this->resumeModuleService->generatePdf($resume, $templateSlug, $styleOverride);
+
             return $pdf->download("Resume-{$resume->user->name}.pdf");
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 403);
         }
     }
+
     /**
      * Update resume rewrite and create a new version.
      */
@@ -111,13 +117,13 @@ class ResumeController extends Controller
         $resume = $this->resumeService->getResumeById($id);
         $rewrite = $resume->rewrite;
 
-        if (!$rewrite) {
+        if (! $rewrite) {
             return response()->json(['error' => 'No rewrite found for this resume'], 404);
         }
 
         // 1. Create a version snapshot of CURRENT content before updating
         $versionNumber = $rewrite->versions()->max('version_number') ?? 0;
-        
+
         $rewrite->versions()->create([
             'summary' => $rewrite->summary,
             'experience' => $rewrite->experience,
@@ -131,13 +137,13 @@ class ResumeController extends Controller
 
         // 2. Update the main rewrite record with NEW content
         $rewrite->update($request->only([
-            'summary', 'experience', 'skills', 'education', 
-            'profile_image', 'contact_details', 'style_config'
+            'summary', 'experience', 'skills', 'education',
+            'profile_image', 'contact_details', 'style_config',
         ]));
 
         return response()->json([
             'message' => 'Resume updated successfully',
-            'data' => $rewrite->refresh()->load('versions')
+            'data' => $rewrite->refresh()->load('versions'),
         ]);
     }
 
@@ -152,6 +158,7 @@ class ResumeController extends Controller
 
         if ($validator->fails()) {
             \Log::error('Resume photo upload validation failed: ', $validator->errors()->toArray());
+
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
@@ -165,7 +172,7 @@ class ResumeController extends Controller
 
         return response()->json([
             'message' => 'Photo uploaded successfully',
-            'path' => $path
+            'path' => $path,
         ]);
     }
 
@@ -177,12 +184,12 @@ class ResumeController extends Controller
         $resume = $this->resumeService->getResumeById($id);
         $rewrite = $resume->rewrite;
 
-        if (!$rewrite) {
+        if (! $rewrite) {
             return response()->json(['data' => []]);
         }
 
         return response()->json([
-            'data' => $rewrite->versions()->orderBy('version_number', 'desc')->get()
+            'data' => $rewrite->versions()->orderBy('version_number', 'desc')->get(),
         ]);
     }
 
@@ -192,13 +199,13 @@ class ResumeController extends Controller
     public function destroy($id)
     {
         $resume = $this->resumeService->getResumeById($id);
-        
-        // Associated modules (analysis, rewrite, etc.) should be handled by 
+
+        // Associated modules (analysis, rewrite, etc.) should be handled by
         // cascade deletes or manually in the service if needed.
         $resume->delete();
 
         return response()->json([
-            'message' => 'Resume deleted successfully'
+            'message' => 'Resume deleted successfully',
         ]);
     }
 }

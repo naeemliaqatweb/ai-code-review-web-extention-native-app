@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AiAnalysisResource;
 use App\Models\CodeSubmission;
 use App\Services\AiAnalysisService;
-use App\Http\Resources\AiAnalysisResource;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
 use Exception;
+use Illuminate\Http\Request;
 
 class AiAnalysisController extends Controller
 {
@@ -24,7 +23,7 @@ class AiAnalysisController extends Controller
     public function index(Request $request)
     {
         $filters = $request->only(['date', 'language']);
-        
+
         $history = $this->aiService->getAnalysisHistory($request->user(), $filters);
 
         return AiAnalysisResource::collection($history);
@@ -43,20 +42,20 @@ class AiAnalysisController extends Controller
             ->where('user_id', $request->user()->id)
             ->first();
 
-        if (!$submission) {
+        if (! $submission) {
             return response()->json(['message' => 'Submission not found or unauthorized.'], 404);
         }
 
         try {
             $analysis = $this->aiService->analyzeSubmission($submission);
-            
+
             return new AiAnalysisResource($analysis);
         } catch (Exception $e) {
             $submission->update(['status' => 'failed']);
-            
+
             return response()->json([
                 'message' => 'Analysis failed.',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

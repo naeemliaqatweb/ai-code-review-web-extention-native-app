@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\CodeSubmission;
 use App\Models\CodeAnalysis;
+use App\Models\CodeSubmission;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Laravel\Passport\Passport;
@@ -32,7 +32,7 @@ class CodeFixTest extends TestCase
         $submission = CodeSubmission::factory()->create([
             'user_id' => $user->id,
             'mode' => 'fix',
-            'content' => 'function test() { eval("alert(1)"); }'
+            'content' => 'function test() { eval("alert(1)"); }',
         ]);
 
         // Mock Gemini response with fix details
@@ -53,21 +53,21 @@ class CodeFixTest extends TestCase
   "fixed_explanation": "Removed dangerous eval function to prevent ACE vulnerabilities.",
   "fixed_improvements": ["Security Hardening", "Best Practices"]
 }
-```'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ], 200)
+```',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ], 200),
         ]);
 
         $response = $this->postJson('/api/analyze-code', [
-            'submission_id' => $submission->id
+            'submission_id' => $submission->id,
         ]);
 
         $response->assertStatus(201);
-        
+
         // Assert database has the new fields
         $this->assertDatabaseHas('code_analyses', [
             'code_submission_id' => $submission->id,
@@ -75,7 +75,7 @@ class CodeFixTest extends TestCase
         ]);
 
         $analysis = CodeAnalysis::where('code_submission_id', $submission->id)->first();
-        $this->assertEquals("function test() { console.log(\"safe\"); }", $analysis->fixed_code);
+        $this->assertEquals('function test() { console.log("safe"); }', $analysis->fixed_code);
         $this->assertIsArray($analysis->fixed_improvements);
         $this->assertContains('Security Hardening', $analysis->fixed_improvements);
     }
@@ -94,7 +94,7 @@ class CodeFixTest extends TestCase
         $submission = CodeSubmission::factory()->create([
             'user_id' => $user->id,
             'content' => $originalContent,
-            'mode' => 'fix'
+            'mode' => 'fix',
         ]);
 
         // Manually create an analysis with fixed_code
@@ -106,7 +106,7 @@ class CodeFixTest extends TestCase
             'improvements' => [],
             'fixed_code' => $fixedContent,
             'fixed_explanation' => 'Fix applied.',
-            'fixed_improvements' => ['Security']
+            'fixed_improvements' => ['Security'],
         ]);
 
         $response = $this->postJson("/api/submissions/{$submission->id}/apply-fix");
@@ -118,7 +118,7 @@ class CodeFixTest extends TestCase
         $this->assertDatabaseHas('submission_versions', [
             'code_submission_id' => $submission->id,
             'content' => $originalContent,
-            'version_number' => 1
+            'version_number' => 1,
         ]);
 
         // Verify submission content is updated
@@ -134,10 +134,10 @@ class CodeFixTest extends TestCase
         Passport::actingAs($user);
 
         $submission = CodeSubmission::factory()->create(['user_id' => $user->id, 'content' => 'v0']);
-        
+
         // Version 1
         $submission->versions()->create(['content' => 'v0', 'version_number' => 1]);
-        
+
         // Prepare a fix to apply
         CodeAnalysis::create([
             'code_submission_id' => $submission->id,
@@ -147,14 +147,14 @@ class CodeFixTest extends TestCase
             'improvements' => [],
             'fixed_code' => 'v1',
             'fixed_explanation' => 'Fix applied.',
-            'fixed_improvements' => []
+            'fixed_improvements' => [],
         ]);
 
         $this->postJson("/api/submissions/{$submission->id}/apply-fix")->assertStatus(200);
 
         $this->assertDatabaseHas('submission_versions', [
             'code_submission_id' => $submission->id,
-            'version_number' => 2
+            'version_number' => 2,
         ]);
     }
 
@@ -165,9 +165,9 @@ class CodeFixTest extends TestCase
     {
         $owner = User::factory()->create();
         $stranger = User::factory()->create();
-        
+
         $submission = CodeSubmission::factory()->create(['user_id' => $owner->id]);
-        
+
         Passport::actingAs($stranger);
         $response = $this->postJson("/api/submissions/{$submission->id}/apply-fix");
 
@@ -184,7 +184,7 @@ class CodeFixTest extends TestCase
         Passport::actingAs($user);
 
         $submission = CodeSubmission::factory()->create(['user_id' => $user->id]);
-        
+
         $response = $this->postJson("/api/submissions/{$submission->id}/apply-fix");
 
         $response->assertStatus(422);

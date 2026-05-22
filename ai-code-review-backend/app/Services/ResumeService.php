@@ -3,11 +3,10 @@
 namespace App\Services;
 
 use App\Models\Resume;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Http\UploadedFile;
-use Smalot\PdfParser\Parser as PdfParser;
-use PhpOffice\PhpWord\IOFactory;
 use Exception;
+use Illuminate\Http\UploadedFile;
+use PhpOffice\PhpWord\IOFactory;
+use Smalot\PdfParser\Parser as PdfParser;
 
 class ResumeService
 {
@@ -21,7 +20,7 @@ class ResumeService
 
         if ($file) {
             $filePath = $file->store('resumes', 'public');
-            $extractedText = $this->extractTextFromFile(storage_path('app/public/' . $filePath));
+            $extractedText = $this->extractTextFromFile(storage_path('app/public/'.$filePath));
         }
 
         return Resume::create([
@@ -42,33 +41,35 @@ class ResumeService
 
         try {
             if ($extension === 'pdf') {
-                $parser = new PdfParser();
+                $parser = new PdfParser;
                 $pdf = $parser->parseFile($fullPath);
+
                 return $pdf->getText();
-            } 
-            
+            }
+
             if (in_array($extension, ['doc', 'docx'])) {
                 $phpWord = IOFactory::load($fullPath);
                 $text = '';
                 foreach ($phpWord->getSections() as $section) {
                     foreach ($section->getElements() as $element) {
                         if (method_exists($element, 'getText')) {
-                            $text .= $element->getText() . "\n";
+                            $text .= $element->getText()."\n";
                         } elseif (method_exists($element, 'getElements')) {
                             // Handle table or nested elements if needed
                             foreach ($element->getElements() as $childElement) {
                                 if (method_exists($childElement, 'getText')) {
-                                    $text .= $childElement->getText() . " ";
+                                    $text .= $childElement->getText().' ';
                                 }
                             }
                             $text .= "\n";
                         }
                     }
                 }
+
                 return trim($text);
             }
         } catch (Exception $e) {
-            \Log::error("Text extraction failed for {$extension}: " . $e->getMessage());
+            \Log::error("Text extraction failed for {$extension}: ".$e->getMessage());
         }
 
         return null;

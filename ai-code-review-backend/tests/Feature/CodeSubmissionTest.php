@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
+use App\Jobs\ProcessAiAnalysis;
 use App\Models\CodeSubmission;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
-use App\Jobs\ProcessAiAnalysis;
 use Laravel\Passport\Passport;
 use Tests\TestCase;
 

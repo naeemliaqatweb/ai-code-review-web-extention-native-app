@@ -2,16 +2,14 @@
 
 namespace App\Services;
 
+use App\Jobs\ProcessAiAnalysis;
 use App\Models\CodeSubmission;
 use App\Models\User;
-use Illuminate\Contracts\Pagination\CursorPaginator;
-use App\Services\AiAnalysisService;
 use Exception;
-
-use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Pagination\CursorPaginator;
+use Illuminate\Support\Facades\DB;
 
 class CodeSubmissionService
-
 {
     protected AiAnalysisService $analysisService;
 
@@ -34,13 +32,10 @@ class CodeSubmissionService
         ]);
 
         // Dispatch background job for AI analysis
-        \App\Jobs\ProcessAiAnalysis::dispatch($submission);
-
+        ProcessAiAnalysis::dispatch($submission);
 
         return $submission;
     }
-
-
 
     /**
      * Retrieve all code submissions for a user.
@@ -64,6 +59,7 @@ class CodeSubmissionService
     public function deleteSubmission(int $id, User $user): bool
     {
         $submission = $this->getSubmissionById($id, $user);
+
         return $submission->delete();
     }
 
@@ -72,11 +68,11 @@ class CodeSubmissionService
      */
     public function applyFix(int $id, User $user): CodeSubmission
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $user) {
+        return DB::transaction(function () use ($id, $user) {
             $submission = $this->getSubmissionById($id, $user);
             $analysis = $submission->analysis;
 
-            if (!$analysis || !$analysis->fixed_code) {
+            if (! $analysis || ! $analysis->fixed_code) {
                 throw new Exception('No fixed code available to apply.');
             }
 

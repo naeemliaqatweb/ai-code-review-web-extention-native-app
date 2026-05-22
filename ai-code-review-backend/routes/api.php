@@ -1,16 +1,16 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\AuthController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-use App\Http\Controllers\CodeSubmissionController;
 use App\Http\Controllers\AiAnalysisController;
+use App\Http\Controllers\CodeSubmissionController;
 use App\Http\Controllers\ResumeController;
+use App\Http\Controllers\TextSubmissionController;
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
@@ -25,10 +25,10 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/submissions/{id}/apply-fix', [CodeSubmissionController::class, 'applyFix']);
 
     // Text Assistant Routes
-    Route::post('/text-submissions', [\App\Http\Controllers\TextSubmissionController::class, 'store']);
-    Route::get('/text-submissions', [\App\Http\Controllers\TextSubmissionController::class, 'index']);
-    Route::get('/text-submissions/{id}', [\App\Http\Controllers\TextSubmissionController::class, 'show']);
-    Route::delete('/text-submissions/{id}', [\App\Http\Controllers\TextSubmissionController::class, 'destroy']);
+    Route::post('/text-submissions', [TextSubmissionController::class, 'store']);
+    Route::get('/text-submissions', [TextSubmissionController::class, 'index']);
+    Route::get('/text-submissions/{id}', [TextSubmissionController::class, 'show']);
+    Route::delete('/text-submissions/{id}', [TextSubmissionController::class, 'destroy']);
 
     // Resume Builder Routes
     Route::post('/resumes', [ResumeController::class, 'store']);
@@ -44,6 +44,6 @@ Route::middleware('auth:api')->group(function () {
     Route::middleware('throttle:ai-requests')->group(function () {
         Route::post('/analyze-code', [AiAnalysisController::class, 'analyze']);
     });
-    
+
     Route::get('/analyses', [AiAnalysisController::class, 'index']);
 });

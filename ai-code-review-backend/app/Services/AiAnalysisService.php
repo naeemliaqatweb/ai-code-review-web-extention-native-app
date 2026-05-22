@@ -4,15 +4,14 @@ namespace App\Services;
 
 use App\Models\CodeAnalysis;
 use App\Models\CodeSubmission;
-use App\Models\TextAnalysis;
-use App\Models\TextSubmission;
 use App\Models\Resume;
 use App\Models\ResumeAnalysis;
 use App\Models\ResumeRewrite;
-use App\Models\User;
+use App\Models\TextAnalysis;
+use App\Models\TextSubmission;
+use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class AiAnalysisService
 {
@@ -37,8 +36,9 @@ class AiAnalysisService
                 'fixed_improvements' => $parsedData['fixed_improvements'] ?? [],
             ]
         );
-        
+
         $submission->update(['status' => 'completed']);
+
         return $analysis;
     }
 
@@ -61,8 +61,9 @@ class AiAnalysisService
                 'explanation' => $parsedData['fixed_explanation'] ?? null,
             ]
         );
-        
+
         $submission->update(['status' => 'completed']);
+
         return $analysis;
     }
 
@@ -86,8 +87,9 @@ class AiAnalysisService
                 'raw_response' => $parsedData,
             ]
         );
-        
+
         $resume->update(['status' => 'completed']);
+
         return $analysis;
     }
 
@@ -109,33 +111,34 @@ class AiAnalysisService
                 'education' => $parsedData['education'] ?? [],
             ]
         );
-        
+
         return $rewrite;
     }
+
     protected function callGemini(string $prompt): array
     {
         $apiKey = env('GEMINI_API_KEY');
         $model = env('GEMINI_MODEL', 'gemini-flash-latest');
 
         if (empty($apiKey)) {
-            Log::error("Gemini API key is missing");
-            throw new Exception("Gemini API key is not configured.");
+            Log::error('Gemini API key is missing');
+            throw new Exception('Gemini API key is not configured.');
         }
 
         $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
 
         $response = Http::post($url, [
-            'contents' => [['parts' => [['text' => $prompt]]]]
+            'contents' => [['parts' => [['text' => $prompt]]]],
         ]);
 
         if ($response->failed()) {
-            Log::error("Gemini API Request Failed", ['status' => $response->status(), 'body' => $response->body()]);
-            throw new Exception("Failed to connect to Gemini API.");
+            Log::error('Gemini API Request Failed', ['status' => $response->status(), 'body' => $response->body()]);
+            throw new Exception('Failed to connect to Gemini API.');
         }
 
         $responseData = $response->json();
         $rawText = $responseData['candidates'][0]['content']['parts'][0]['text'] ?? '';
-        
+
         // Strip markdown
         $rawText = trim($rawText);
         $rawText = preg_replace('/^```json\s*|```$/', '', $rawText);
@@ -143,9 +146,9 @@ class AiAnalysisService
 
         $parsedData = json_decode($rawText, true);
 
-        if (json_last_error() !== JSON_ERROR_NONE || !is_array($parsedData)) {
-            Log::error("JSON Parsing Failed", ['raw_text' => $rawText]);
-            throw new Exception("Failed to parse AI output into valid JSON.");
+        if (json_last_error() !== JSON_ERROR_NONE || ! is_array($parsedData)) {
+            Log::error('JSON Parsing Failed', ['raw_text' => $rawText]);
+            throw new Exception('Failed to parse AI output into valid JSON.');
         }
 
         return $parsedData;
@@ -153,16 +156,16 @@ class AiAnalysisService
 
     protected function prepareCodePrompt(CodeSubmission $submission): array
     {
-        $systemInstructions = "You are a world-class senior software engineer and security auditor.";
+        $systemInstructions = 'You are a world-class senior software engineer and security auditor.';
         $isFixMode = $submission->mode === 'fix';
         $isExplainMode = $submission->mode === 'explain';
-        
+
         if ($isFixMode) {
             $modeInstruction = "Provide a 'PRO' version of the submitted code. FIX bugs, security flaws, and improve readability while preserving intent.";
         } elseif ($isExplainMode) {
-            $modeInstruction = "Explain the logic of this code in detail. Break down how it works, what data structures are used, and any potential side effects. Be educational.";
+            $modeInstruction = 'Explain the logic of this code in detail. Break down how it works, what data structures are used, and any potential side effects. Be educational.';
         } else {
-            $modeInstruction = "Provide a comprehensive code review focusing on bugs, security, and performance.";
+            $modeInstruction = 'Provide a comprehensive code review focusing on bugs, security, and performance.';
         }
 
         $jsonSchema = [
@@ -178,45 +181,49 @@ class AiAnalysisService
             $jsonSchema['fixed_improvements'] = 'array of strings';
         }
 
-        $prompt = "{$systemInstructions}\n\n{$modeInstruction}\n\n" .
-                 "Analyze the following {$submission->language} code:\n" .
-                 "```\n{$submission->content}\n```\n\n" .
-                 "Respond ONLY in valid JSON with this schema:\n" . json_encode($jsonSchema, JSON_PRETTY_PRINT);
+        $prompt = "{$systemInstructions}\n\n{$modeInstruction}\n\n".
+                 "Analyze the following {$submission->language} code:\n".
+                 "```\n{$submission->content}\n```\n\n".
+                 "Respond ONLY in valid JSON with this schema:\n".json_encode($jsonSchema, JSON_PRETTY_PRINT);
 
         return ['prompt' => $prompt];
     }
 
     protected function prepareTextPrompt(TextSubmission $submission): array
     {
-        $systemInstructions = "You are a professional editor and linguist.";
-        
-        switch($submission->mode) {
-            case 'grammar': $task = "Fix all grammar, spelling, and punctuation errors."; break;
-            case 'rewrite': $task = "Rephrase for clarity and impact while preserving meaning."; break;
-            case 'summarize': $task = "Provide a concise summary of key points."; break;
-            case 'improve': $task = "Enhance professional tone and flow."; break;
-            default: $task = "Improve the text.";
+        $systemInstructions = 'You are a professional editor and linguist.';
+
+        switch ($submission->mode) {
+            case 'grammar': $task = 'Fix all grammar, spelling, and punctuation errors.';
+                break;
+            case 'rewrite': $task = 'Rephrase for clarity and impact while preserving meaning.';
+                break;
+            case 'summarize': $task = 'Provide a concise summary of key points.';
+                break;
+            case 'improve': $task = 'Enhance professional tone and flow.';
+                break;
+            default: $task = 'Improve the text.';
         }
 
         $jsonSchema = [
             'score' => 'integer (1-10)',
             'bugs' => 'array of strings (linguistic errors found)',
             'improvements' => 'array of strings (stylistic suggestions)',
-            'fixed_code' => "string (the processed text)",
+            'fixed_code' => 'string (the processed text)',
             'fixed_explanation' => 'string (summary of changes)',
         ];
-        
-        $prompt = "{$systemInstructions}\n\nTask: {$task}\n\n" .
-                 "Input Text:\n\"\"\"\n{$submission->content}\n\"\"\"\n\n" .
-                 "Respond ONLY in valid JSON with this schema:\n" . json_encode($jsonSchema, JSON_PRETTY_PRINT);
+
+        $prompt = "{$systemInstructions}\n\nTask: {$task}\n\n".
+                 "Input Text:\n\"\"\"\n{$submission->content}\n\"\"\"\n\n".
+                 "Respond ONLY in valid JSON with this schema:\n".json_encode($jsonSchema, JSON_PRETTY_PRINT);
 
         return ['prompt' => $prompt];
     }
 
     protected function prepareResumePrompt(Resume $resume): array
     {
-        $systemInstructions = "You are an expert HR Manager and Professional Resume Writer.";
-        $task = "Analyze the resume content and provide professional feedback to optimize it for ATS and hiring managers.";
+        $systemInstructions = 'You are an expert HR Manager and Professional Resume Writer.';
+        $task = 'Analyze the resume content and provide professional feedback to optimize it for ATS and hiring managers.';
 
         $jsonSchema = [
             'score' => 'integer (1-10)',
@@ -227,18 +234,18 @@ class AiAnalysisService
         ];
 
         $content = $resume->extracted_text ?: $resume->original_content;
-        
-        $prompt = "{$systemInstructions}\n\nTask: {$task}\n\n" .
-                 "Resume Content:\n\"\"\"\n{$content}\n\"\"\"\n\n" .
-                 "Respond ONLY in valid JSON with this schema:\n" . json_encode($jsonSchema, JSON_PRETTY_PRINT);
+
+        $prompt = "{$systemInstructions}\n\nTask: {$task}\n\n".
+                 "Resume Content:\n\"\"\"\n{$content}\n\"\"\"\n\n".
+                 "Respond ONLY in valid JSON with this schema:\n".json_encode($jsonSchema, JSON_PRETTY_PRINT);
 
         return ['prompt' => $prompt];
     }
 
     protected function prepareRewritePrompt(Resume $resume): array
     {
-        $systemInstructions = "You are a world-class professional resume writer and career coach.";
-        $task = "REWRITE the resume content into a high-impact, professional, and ATS-friendly format. Improve wording, clarify achievements, and ensure a consistent tone.";
+        $systemInstructions = 'You are a world-class professional resume writer and career coach.';
+        $task = 'REWRITE the resume content into a high-impact, professional, and ATS-friendly format. Improve wording, clarify achievements, and ensure a consistent tone.';
 
         $jsonSchema = [
             'summary' => 'string (a powerful professional summary)',
@@ -248,10 +255,10 @@ class AiAnalysisService
         ];
 
         $content = $resume->extracted_text ?: $resume->original_content;
-        
-        $prompt = "{$systemInstructions}\n\nTask: {$task}\n\n" .
-                 "Original Content:\n\"\"\"\n{$content}\n\"\"\"\n\n" .
-                 "Respond ONLY in valid JSON with this schema:\n" . json_encode($jsonSchema, JSON_PRETTY_PRINT);
+
+        $prompt = "{$systemInstructions}\n\nTask: {$task}\n\n".
+                 "Original Content:\n\"\"\"\n{$content}\n\"\"\"\n\n".
+                 "Respond ONLY in valid JSON with this schema:\n".json_encode($jsonSchema, JSON_PRETTY_PRINT);
 
         return ['prompt' => $prompt];
     }

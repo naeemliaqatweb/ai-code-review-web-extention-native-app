@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Created At: 2026-04-17T20:35:50Z
  * File Path: tests/Feature/QueueAnalysisTest.php
@@ -6,15 +7,14 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\CodeSubmission;
-use App\Models\CodeAnalysis;
 use App\Jobs\ProcessAiAnalysis;
+use App\Models\CodeSubmission;
+use App\Models\User;
 use App\Services\AiAnalysisService;
+use Exception;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
-use Exception;
 
 class QueueAnalysisTest extends TestCase
 {
@@ -32,7 +32,7 @@ class QueueAnalysisTest extends TestCase
         $submission = CodeSubmission::factory()->create([
             'user_id' => $user->id,
             'type' => 'code',
-            'status' => 'pending'
+            'status' => 'pending',
         ]);
 
         // Mock Gemini Response
@@ -50,13 +50,13 @@ class QueueAnalysisTest extends TestCase
   "improvements": ["Perfect code"],
   "security_issues": []
 }
-```'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ], 200)
+```',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ], 200),
         ]);
 
         // Execute Job
@@ -66,11 +66,11 @@ class QueueAnalysisTest extends TestCase
         // Refresh and check status
         $submission->refresh();
         $this->assertEquals('completed', $submission->status);
-        
+
         // Verify analysis was stored
         $this->assertDatabaseHas('code_analyses', [
             'code_submission_id' => $submission->id,
-            'score' => 9
+            'score' => 9,
         ]);
     }
 
@@ -80,17 +80,17 @@ class QueueAnalysisTest extends TestCase
         $submission = CodeSubmission::factory()->create([
             'user_id' => $user->id,
             'type' => 'code',
-            'status' => 'pending'
+            'status' => 'pending',
         ]);
 
         // Mock API Error
         Http::fake([
-            'generativelanguage.googleapis.com/*' => Http::response(['error' => 'API Down'], 500)
+            'generativelanguage.googleapis.com/*' => Http::response(['error' => 'API Down'], 500),
         ]);
 
         // Execute Job - expecting exception
         $job = new ProcessAiAnalysis($submission);
-        
+
         try {
             $job->handle(app(AiAnalysisService::class));
         } catch (Exception $e) {
@@ -110,7 +110,7 @@ class QueueAnalysisTest extends TestCase
             'type' => 'text',
             'mode' => 'grammar',
             'content' => 'I has a cheeseburger.',
-            'status' => 'pending'
+            'status' => 'pending',
         ]);
 
         Http::fake([
@@ -128,13 +128,13 @@ class QueueAnalysisTest extends TestCase
   "fixed_code": "I have a cheeseburger.",
   "fixed_explanation": "Corrected grammar error."
 }
-```'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ], 200)
+```',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ], 200),
         ]);
 
         $job = new ProcessAiAnalysis($submission);
@@ -145,7 +145,7 @@ class QueueAnalysisTest extends TestCase
         $this->assertDatabaseHas('code_analyses', [
             'code_submission_id' => $submission->id,
             'fixed_code' => 'I have a cheeseburger.',
-            'score' => 7
+            'score' => 7,
         ]);
     }
 
@@ -157,7 +157,7 @@ class QueueAnalysisTest extends TestCase
             'type' => 'text',
             'mode' => 'summarize',
             'content' => 'The quick brown fox jumps over the lazy dog. This sentence is famous for containing every letter of the alphabet.',
-            'status' => 'pending'
+            'status' => 'pending',
         ]);
 
         Http::fake([
@@ -175,13 +175,13 @@ class QueueAnalysisTest extends TestCase
   "fixed_code": "Legendary alphabet sentence featuring a fox and a dog.",
   "fixed_explanation": "Summarized the key point of the text."
 }
-```'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ], 200)
+```',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ], 200),
         ]);
 
         $job = new ProcessAiAnalysis($submission);
@@ -191,7 +191,7 @@ class QueueAnalysisTest extends TestCase
         $this->assertEquals('completed', $submission->status);
         $this->assertDatabaseHas('code_analyses', [
             'code_submission_id' => $submission->id,
-            'fixed_code' => 'Legendary alphabet sentence featuring a fox and a dog.'
+            'fixed_code' => 'Legendary alphabet sentence featuring a fox and a dog.',
         ]);
     }
 }

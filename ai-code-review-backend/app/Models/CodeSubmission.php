@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CodeSubmission extends Model
 {
@@ -21,28 +23,27 @@ class CodeSubmission extends Model
         'type',
     ];
 
-
     /**
      * Get the user that owns the code submission.
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\User::class);
+        return $this->belongsTo(User::class);
     }
 
     /**
      * Get the analysis document associated with the submission.
      */
-    public function analysis(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function analysis(): HasOne
     {
-        return $this->hasOne(\App\Models\CodeAnalysis::class);
+        return $this->hasOne(CodeAnalysis::class);
     }
 
     /**
      * Get the historical versions of the submission.
      */
-    public function versions(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function versions(): HasMany
     {
-        return $this->hasMany(\App\Models\SubmissionVersion::class);
+        return $this->hasMany(SubmissionVersion::class);
     }
 }

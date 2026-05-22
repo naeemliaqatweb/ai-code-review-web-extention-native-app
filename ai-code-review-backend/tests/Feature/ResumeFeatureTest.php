@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Resume;
-use App\Models\ResumeTemplate;
 use App\Models\ResumeRewrite;
+use App\Models\ResumeTemplate;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -25,12 +25,12 @@ class ResumeFeatureTest extends TestCase
     {
         $response = $this->actingAs($this->user, 'api')
             ->postJson('/api/resumes', [
-                'content' => 'Sample resume text for analysis and rewrite.'
+                'content' => 'Sample resume text for analysis and rewrite.',
             ]);
 
         $response->assertStatus(201)
             ->assertJsonStructure([
-                'data' => ['id', 'original_content', 'analysis', 'rewrite']
+                'data' => ['id', 'original_content', 'analysis', 'rewrite'],
             ]);
     }
 
@@ -39,7 +39,7 @@ class ResumeFeatureTest extends TestCase
         ResumeTemplate::create([
             'name' => 'Test Template',
             'slug' => 'test-template',
-            'is_premium' => false
+            'is_premium' => false,
         ]);
 
         $response = $this->actingAs($this->user, 'api')
@@ -53,18 +53,18 @@ class ResumeFeatureTest extends TestCase
     {
         $resume = Resume::create([
             'user_id' => $this->user->id,
-            'original_content' => 'Content'
+            'original_content' => 'Content',
         ]);
 
         ResumeRewrite::create([
             'resume_id' => $resume->id,
-            'summary' => 'Summary'
+            'summary' => 'Summary',
         ]);
 
         ResumeTemplate::create([
             'name' => 'Premium Template',
             'slug' => 'premium-template',
-            'is_premium' => true
+            'is_premium' => true,
         ]);
 
         $response = $this->actingAs($this->user, 'api')

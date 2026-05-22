@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\ResumeTemplate;
 use Illuminate\Database\Seeder;
 
 class ResumeTemplateSeeder extends Seeder
@@ -12,21 +12,21 @@ class ResumeTemplateSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\ResumeTemplate::create([
+        ResumeTemplate::create([
             'name' => 'Modern Minimalist',
             'slug' => 'modern-minimalist',
             'preview_url' => '/templates/modern.png',
             'is_premium' => false,
         ]);
 
-        \App\Models\ResumeTemplate::create([
+        ResumeTemplate::create([
             'name' => 'Professional Corporate',
             'slug' => 'professional-corporate',
             'preview_url' => '/templates/professional.png',
             'is_premium' => false,
         ]);
 
-        \App\Models\ResumeTemplate::create([
+        ResumeTemplate::create([
             'name' => 'Creative Designer',
             'slug' => 'creative-designer',
             'preview_url' => '/templates/creative.png',

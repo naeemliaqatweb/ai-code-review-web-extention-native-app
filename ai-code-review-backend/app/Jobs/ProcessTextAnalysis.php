@@ -5,8 +5,8 @@ namespace App\Jobs;
 use App\Models\TextSubmission;
 use App\Services\AiAnalysisService;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
@@ -35,7 +35,7 @@ class ProcessTextAnalysis implements ShouldQueue
             $aiService->analyzeTextSubmission($this->submission);
             $this->submission->update(['status' => 'completed']);
         } catch (\Exception $e) {
-            \Log::error('Text Analysis Job Failed: ' . $e->getMessage());
+            \Log::error('Text Analysis Job Failed: '.$e->getMessage());
             $this->submission->update(['status' => 'failed']);
         }
     }

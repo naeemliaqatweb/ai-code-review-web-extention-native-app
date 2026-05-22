@@ -2,11 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\CodeAnalysis;
 use App\Models\CodeSubmission;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CodeAnalysis>
+ * @extends Factory<CodeAnalysis>
  */
 class CodeAnalysisFactory extends Factory
 {

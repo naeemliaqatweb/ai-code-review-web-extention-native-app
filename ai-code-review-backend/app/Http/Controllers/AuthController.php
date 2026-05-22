@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -20,7 +21,7 @@ class AuthController extends Controller
             'code' => $user->codeSubmissions()->count(),
             'resume' => $user->resumes()->count(),
         ];
-        
+
         return response()->json($user);
     }
 
@@ -42,7 +43,7 @@ class AuthController extends Controller
         ]);
 
         $token = $user->createToken('AuthToken')->accessToken;
-        
+
         $user->counts = ['text' => 0, 'code' => 0, 'resume' => 0];
 
         return response()->json([
@@ -56,7 +57,7 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        \Illuminate\Support\Facades\Log::info('Login Request Data:', $request->all());
+        Log::info('Login Request Data:', $request->all());
 
         $request->validate([
             'email' => 'required|string|email',

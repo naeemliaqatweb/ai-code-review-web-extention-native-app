@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\CodeSubmissionResource;
 use App\Services\CodeSubmissionService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class CodeSubmissionController extends Controller
@@ -21,7 +22,7 @@ class CodeSubmissionController extends Controller
     public function index(Request $request)
     {
         $submissions = $this->submissionService->getUserSubmissions($request->user());
-        
+
         return CodeSubmissionResource::collection($submissions);
     }
 
@@ -33,7 +34,7 @@ class CodeSubmissionController extends Controller
         // Enforce 20 submission limit
         if ($request->user()->codeSubmissions()->count() >= 20) {
             return response()->json([
-                'message' => 'You have reached the maximum limit of 20 code reviews. Please delete existing submissions to create new ones.'
+                'message' => 'You have reached the maximum limit of 20 code reviews. Please delete existing submissions to create new ones.',
             ], 403);
         }
 
@@ -76,8 +77,9 @@ class CodeSubmissionController extends Controller
     {
         try {
             $submission = $this->submissionService->applyFix($id, $request->user());
+
             return new CodeSubmissionResource($submission);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             return response()->json(['message' => 'Submission not found.'], 404);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 422);

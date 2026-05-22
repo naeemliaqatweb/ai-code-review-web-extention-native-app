@@ -3,10 +3,8 @@
 namespace App\Services;
 
 use App\Models\Resume;
-use App\Models\ResumeRewrite;
 use App\Models\ResumeTemplate;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Gate;
 use Exception;
 
 class ResumeModuleService
@@ -27,8 +25,8 @@ class ResumeModuleService
         $template = ResumeTemplate::where('slug', $templateSlug)->firstOrFail();
 
         $rewrite = $resume->rewrite;
-        if (!$rewrite) {
-            throw new Exception("Resume has not been rewritten yet.");
+        if (! $rewrite) {
+            throw new Exception('Resume has not been rewritten yet.');
         }
 
         // Access Control - Relaxed for demo
@@ -43,13 +41,13 @@ class ResumeModuleService
 
         // Determine view based on slug
         $viewName = "resumes.templates.{$template->slug}";
-        if (!view()->exists($viewName)) {
+        if (! view()->exists($viewName)) {
             $viewName = 'resumes.templates.base';
         }
 
         $pdf = Pdf::loadView($viewName, [
             'rewrite' => $rewrite,
-            'template' => $template
+            'template' => $template,
         ]);
 
         return $pdf;

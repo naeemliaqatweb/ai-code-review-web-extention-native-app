@@ -46,6 +46,7 @@ class TextSubmissionService
     public function deleteSubmission(int $id, User $user): bool
     {
         $submission = $this->getSubmissionById($id, $user);
+
         return $submission->delete();
     }
 }

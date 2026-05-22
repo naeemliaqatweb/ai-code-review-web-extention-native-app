@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\CodeSubmission;
 use App\Models\CodeAnalysis;
+use App\Models\CodeSubmission;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Laravel\Passport\Passport;
@@ -42,17 +42,17 @@ class AiAnalysisTest extends TestCase
   "improvements": ["Use explicit return types"],
   "security_issues": []
 }
-```'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ], 200)
+```',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ], 200),
         ]);
 
         $response = $this->postJson('/api/analyze-code', [
-            'submission_id' => $submission->id
+            'submission_id' => $submission->id,
         ]);
 
         $response->assertStatus(201);
@@ -61,7 +61,7 @@ class AiAnalysisTest extends TestCase
         // Verify it was stored in databse securely
         $this->assertDatabaseHas('code_analyses', [
             'code_submission_id' => $submission->id,
-            'score' => 8
+            'score' => 8,
         ]);
     }
 
@@ -73,7 +73,7 @@ class AiAnalysisTest extends TestCase
         // Seed 2 analyses mapped across 2 submissions for this user
         $sub1 = CodeSubmission::factory()->create(['user_id' => $user->id, 'language' => 'php']);
         $sub2 = CodeSubmission::factory()->create(['user_id' => $user->id, 'language' => 'python']);
-        
+
         CodeAnalysis::factory()->create(['code_submission_id' => $sub1->id]);
         CodeAnalysis::factory()->create(['code_submission_id' => $sub2->id]);
 
@@ -81,7 +81,7 @@ class AiAnalysisTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonCount(2, 'data'); // Fetches both items from history
-            
+
         // Test filtering
         $responseFilter = $this->getJson('/api/analyses?language=python');
         $responseFilter->assertStatus(200)

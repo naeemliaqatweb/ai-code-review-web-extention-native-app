@@ -6,10 +6,6 @@ parameters:
         - app/
         - config/
         - routes/
-
     excludePaths:
         - routes/console.php
-
-    # Lowering this temporarily to 1 or 2 ignores strict type-mismatches 
-    # while keeping foundational error detection active.
     level: 2

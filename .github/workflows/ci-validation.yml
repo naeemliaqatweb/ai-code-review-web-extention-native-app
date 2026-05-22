@@ -6,10 +6,11 @@ on:
   pull_request:
     branches: [master]
 
+# This fixes the Node.js deprecation warnings on the runner
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
-  # ==========================================
-  # NEXT.JS FRONTEND CHECKS
-  # ==========================================
   frontend-checks:
     name: Next.js Quality Control
     runs-on: ubuntu-latest
@@ -17,6 +18,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # Note: We keep node-version '20' or '22' for your application build itself
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
@@ -39,9 +41,6 @@ jobs:
           cd ai-code-review-frontend
           npx tsc --noEmit
 
-  # ==========================================
-  # LARAVEL BACKEND CHECKS
-  # ==========================================
   backend-checks:
     name: Laravel Code & Security Analysis
     runs-on: ubuntu-latest
@@ -69,13 +68,11 @@ jobs:
       - name: Check PHP Syntax & Code Styling (Laravel Pint)
         run: |
           cd ai-code-review-backend
-          # If using Pint, execute it. If not installed, this step can be safely modified to phpcs
           vendor/bin/pint --test || echo "Ensure Laravel Pint is configured"
 
       - name: Run Static Code Analysis (Larastan)
         run: |
           cd ai-code-review-backend
-          # Assumes larastan/larastan dependency is added to composer dev requirements
           vendor/bin/phpstan analyse --error-format=github || echo "Configure Larastan to run advanced type checks"
 
       - name: Audit Composer Packages for Public Vulnerabilities

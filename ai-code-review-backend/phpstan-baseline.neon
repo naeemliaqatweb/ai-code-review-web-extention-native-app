@@ -1,0 +1,211 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined method App\\Services\\AiAnalysisService\:\:getAnalysisHistory\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Http/Controllers/AiAnalysisController.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\User\:\:\$counts\.$#'
+			identifier: property.notFound
+			count: 3
+			path: app/Http/Controllers/AuthController.php
+
+		-
+			message: '#^Variable \$path might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: app/Http/Controllers/ResumeController.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\AiAnalysisResource\:\:\$bugs\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/AiAnalysisResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\AiAnalysisResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/AiAnalysisResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\AiAnalysisResource\:\:\$fixed_code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/AiAnalysisResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\AiAnalysisResource\:\:\$fixed_explanation\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/AiAnalysisResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\AiAnalysisResource\:\:\$fixed_improvements\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/AiAnalysisResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\AiAnalysisResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/AiAnalysisResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\AiAnalysisResource\:\:\$improvements\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/AiAnalysisResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\AiAnalysisResource\:\:\$score\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/AiAnalysisResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\AiAnalysisResource\:\:\$security_issues\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/AiAnalysisResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\AiAnalysisResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/AiAnalysisResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\CodeSubmissionResource\:\:\$content\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/CodeSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\CodeSubmissionResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/CodeSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\CodeSubmissionResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/CodeSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\CodeSubmissionResource\:\:\$language\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/CodeSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\CodeSubmissionResource\:\:\$mode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/CodeSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\CodeSubmissionResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/CodeSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\CodeSubmissionResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/CodeSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\CodeSubmissionResource\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/CodeSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\CodeSubmissionResource\:\:\$user_id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/CodeSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\TextSubmissionResource\:\:\$analysis\.$#'
+			identifier: property.notFound
+			count: 5
+			path: app/Http/Resources/TextSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\TextSubmissionResource\:\:\$content\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/TextSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\TextSubmissionResource\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/TextSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\TextSubmissionResource\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/TextSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\TextSubmissionResource\:\:\$mode\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/TextSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\TextSubmissionResource\:\:\$status\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/TextSubmissionResource.php
+
+		-
+			message: '#^Access to an undefined property App\\Http\\Resources\\TextSubmissionResource\:\:\$title\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Http/Resources/TextSubmissionResource.php
+
+		-
+			message: '#^Class App\\Models\\Report not found\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Models/User.php
+
+		-
+			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
+			identifier: larastan.noEnvCallsOutsideOfConfig
+			count: 2
+			path: app/Services/AiAnalysisService.php
+
+		-
+			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$fixed_code\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/CodeSubmissionService.php
+
+		-
+			message: '#^Access to an undefined property App\\Models\\Resume\:\:\$rewrite\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Services/ResumeModuleService.php
+
+		-
+			message: '#^Relation ''analysis'' is not found in App\\Models\\Resume model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Services/ResumeService.php
+
+		-
+			message: '#^Relation ''rewrite'' is not found in App\\Models\\Resume model\.$#'
+			identifier: larastan.relationExistence
+			count: 1
+			path: app/Services/ResumeService.php

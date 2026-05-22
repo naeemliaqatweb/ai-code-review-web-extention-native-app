@@ -1,0 +1,40 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('resume_rewrites', function (Blueprint $table) {
+            $table->string('profile_image')->nullable();
+            $table->json('contact_details')->nullable();
+            $table->json('style_config')->nullable();
+        });
+
+        Schema::table('resume_rewrite_versions', function (Blueprint $table) {
+            $table->string('profile_image')->nullable();
+            $table->json('contact_details')->nullable();
+            $table->json('style_config')->nullable();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('resume_rewrites', function (Blueprint $table) {
+            $table->dropColumn(['profile_image', 'contact_details', 'style_config']);
+        });
+
+        Schema::table('resume_rewrite_versions', function (Blueprint $table) {
+            $table->dropColumn(['profile_image', 'contact_details', 'style_config']);
+        });
+    }
+};

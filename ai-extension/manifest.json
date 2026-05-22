@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "AI Assistant Extension",
+  "version": "1.0.0",
+  "description": "Premium AI Assistant for your browser",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "src/background/index.js",
+    "type": "module"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}

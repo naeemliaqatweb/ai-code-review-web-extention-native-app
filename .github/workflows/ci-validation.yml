@@ -33,7 +33,7 @@ jobs:
       - name: Run Next.js Linter (ESLint)
         run: |
           cd ai-code-review-frontend
-          npx next lint
+          npm run lint
 
       - name: Verify TypeScript compilation
         run: |

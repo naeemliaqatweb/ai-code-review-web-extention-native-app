@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: [master]
 
-# This fixes the Node.js deprecation warnings on the runner
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -18,7 +17,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Note: We keep node-version '20' or '22' for your application build itself
+      # Cache setup speeds up npm builds on future commits
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
@@ -34,7 +33,8 @@ jobs:
       - name: Run Next.js Linter (ESLint)
         run: |
           cd ai-code-review-frontend
-          npx next lint .
+          npx next lint
+
       - name: Verify TypeScript compilation
         run: |
           cd ai-code-review-frontend
